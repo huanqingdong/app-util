@@ -98,7 +98,7 @@ class MethodPerformance {
     void printPerformance(int min) {
         Date end = new Date();
         long consume = end.getTime() - begin.getTime();
-        if (consume > min) {
+        if (consume >= min) {
             if (PerformanceMonitor.useStdout) {
                 System.out.println("PerformanceMonitor->" + serviceMethod + "花费" + consume + "毫秒." + formatter.format(begin) + "->" + formatter.format(end));
             } else {
