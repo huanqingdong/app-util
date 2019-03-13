@@ -11,7 +11,7 @@ import java.util.UUID;
 public class MdcUtil {
 
     public static void setMdcUUID() {
-        MDC.put("TID", UUID.randomUUID().toString());
+        MDC.put("TID", UUID.randomUUID().toString().replace("-", ""));
     }
 
     public static void setMdc() {
@@ -34,7 +34,7 @@ public class MdcUtil {
         MDC.put("TID", null);
     }
 
-    public static String getMdc(){
+    public static String getMdc() {
         return MDC.get("TID");
     }
 
