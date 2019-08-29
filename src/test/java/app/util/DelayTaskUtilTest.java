@@ -13,20 +13,20 @@ public class DelayTaskUtilTest {
     @Test
     public void addTask() throws InterruptedException {
 
-        DelayTaskUtil.addTask(1000*2, ()->{
+        DelayTaskUtil.addTask(1000 * 2, () -> {
             log.info("delay 2s");
         });
 
 
-        DelayTaskUtil.addTask(1000*4, ()->{
+        DelayTaskUtil.addTask(1000 * 4, () -> {
             log.info("delay 4s");
         });
 
 
-        DelayTaskUtil.addTask(1000*6, ()->{
+        DelayTaskUtil.addTask(1000 * 6, () -> {
             log.info("delay 6s");
         });
 
-        Thread.sleep(1000*10);
+        Thread.sleep(1000 * 10);
     }
 }
