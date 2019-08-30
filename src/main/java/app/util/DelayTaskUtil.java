@@ -1,11 +1,12 @@
 package app.util;
 
-import lombok.Data;
+import app.task.delay.DelayedTask;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
+import org.slf4j.Logger;
 
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -67,90 +68,27 @@ public class DelayTaskUtil {
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(CORE_POOL_SIZE,
                 new BasicThreadFactory.Builder().namingPattern("delay-pool-%d").build());
 
-        Thread daemonThread = new Thread(() -> {
-            while (true) {
-                try {
-                    DelayedTask task = delayQueue.poll(1, TimeUnit.HOURS);
-                    if (task != null) {
-                        log.info("执行DelayedTask:{}", task);
-                        executorService.execute(task);
-                    }
-                } catch (Exception e) {
-                    log.error("执行DelayedTask发生异常", e);
-                }
-            }
-        });
-
-        daemonThread.setDaemon(true);
+        Thread daemonThread = getDelayDaemonThread(executorService, delayQueue, log);
         daemonThread.setName("Delay-Daemon");
         daemonThread.start();
     }
 
 
-    @Data
-    public static class DelayedTask implements Runnable, Delayed {
-
-        /**
-         * 延时毫秒数
-         */
-        private long delayedMilliSeconds;
-        /**
-         * 任务创建时的系统毫秒值
-         */
-        private long currentTimeMillisOfCreated;
-
-        /**
-         * 任务对象
-         */
-        private Runnable target;
-
-
-        /**
-         * 获取延时任务实例
-         *
-         * @param delayedMilliSeconds 延时时间
-         * @param target              延时任务
-         * @author Huanqd@2018年9月20日 上午11:08:31
-         */
-        private DelayedTask(long delayedMilliSeconds, Runnable target) {
-            this.currentTimeMillisOfCreated = System.currentTimeMillis();
-            this.delayedMilliSeconds = delayedMilliSeconds;
-            this.target = target;
-        }
-
-        @Override
-        public void run() {
-            if (target != null) {
-                target.run();
+    public static Thread getDelayDaemonThread(ExecutorService executor, DelayQueue<DelayedTask> queue, Logger logger) {
+        Thread daemonThread = new Thread(() -> {
+            while (true) {
+                try {
+                    DelayedTask task = queue.poll(1, TimeUnit.HOURS);
+                    if (task != null) {
+                        logger.info("执行DelayedTask:{}", task);
+                        executor.execute(task);
+                    }
+                } catch (Exception e) {
+                    logger.error("执行DelayedTask发生异常", e);
+                }
             }
-        }
-
-        /**
-         * 获取当前任务的剩余延时
-         *
-         * @param unit 单位
-         */
-        @Override
-        public long getDelay(TimeUnit unit) {
-            long currentDelay = this.currentTimeMillisOfCreated + this.delayedMilliSeconds - System.currentTimeMillis();
-            return unit.convert(currentDelay, TimeUnit.MILLISECONDS);
-        }
-
-        /**
-         * 用于队列排队
-         */
-        @Override
-        public int compareTo(Delayed other) {
-            int result = 0;
-            if (other instanceof DelayedTask) {
-                DelayedTask otherTask = (DelayedTask) other;
-                // 当前任务执行时间
-                long selfExecTime = this.currentTimeMillisOfCreated + this.delayedMilliSeconds;
-                // 其余任务执行时间
-                long otherExecTime = otherTask.getCurrentTimeMillisOfCreated() + otherTask.getDelayedMilliSeconds();
-                result = Long.compare(selfExecTime, otherExecTime);
-            }
-            return result;
-        }
+        });
+        daemonThread.setDaemon(true);
+        return daemonThread;
     }
 }
