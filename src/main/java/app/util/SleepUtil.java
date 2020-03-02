@@ -18,7 +18,7 @@ public class SleepUtil {
 
     public static void sleepMillis(long millis) {
         try {
-            Thread.sleep(1000);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             log.error("sleep 异常",e);
         }
