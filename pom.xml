@@ -6,7 +6,7 @@
 
     <groupId>tech.nosql</groupId>
     <artifactId>app-util</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 
 
     <properties>
