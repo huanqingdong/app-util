@@ -2,6 +2,8 @@ package app.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 /**
  * Es工具类
@@ -26,5 +28,17 @@ public class EsUtil {
         String pathForQuery = path.replace("/", "\\/");
         log.debug("EsUtil.getPathForQuery:{}->{}", path, pathForQuery);
         return pathForQuery;
+    }
+
+    /**
+     * 获取index名称
+     *
+     * @param clazz bean类
+     * @return 索引名称
+     */
+    public static String getIndexName(Class clazz) {
+        Document annotation = AnnotationUtils.findAnnotation(clazz, Document.class);
+        assert annotation != null : "类IovDir,无Document注解.";
+        return annotation.indexName();
     }
 }
