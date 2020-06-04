@@ -38,7 +38,7 @@ public class EsUtil {
      */
     public static String getIndexName(Class clazz) {
         Document annotation = AnnotationUtils.findAnnotation(clazz, Document.class);
-        assert annotation != null : "类IovDir,无Document注解.";
+        assert annotation != null : "类" + clazz.getName() + ",无Document注解.";
         return annotation.indexName();
     }
 }
