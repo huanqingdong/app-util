@@ -1,5 +1,6 @@
 package app.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -71,6 +72,29 @@ public class DateStrUtil {
      */
     public static String getTimeStringNow() {
         return getTimeString(new Date());
+    }
+
+    /**
+     * 将日期字符串转换为时间
+     *
+     * @param date 2019-10-01
+     * @return 日期
+     * @throws ParseException e
+     */
+    public static Date getDateFromString(String date) throws ParseException {
+        return SDF_STD_DATE.parse(date);
+    }
+
+
+    /**
+     * 将日期时间字符串转换为时间
+     *
+     * @param dateTime 2019-10-01 09:11:12
+     * @return 日期
+     * @throws ParseException e
+     */
+    public static Date getDateTimeFromString(String dateTime) throws ParseException {
+        return SDF_STD_DATE_TIME.parse(dateTime);
     }
 
 }
